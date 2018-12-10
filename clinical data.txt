@@ -1,0 +1,358 @@
+> trials = read.csv("clinical_trial",stringsAsFactors = FALSE)
+Error in file(file, "rt") : cannot open the connection
+In addition: Warning message:
+In file(file, "rt") :
+  cannot open file 'clinical_trial': No such file or directory
+> trials = read.csv("clinical_trial.csv",stringsAsFactors = FALSE)
+> str(trials)
+'data.frame':   1860 obs. of  3 variables:
+ $ title   : chr  "Treatment of Hodgkin's disease and other cancers with 1,3-bis(2-chloroethyl)-1-nitrosourea (BCNU; NSC-409962)." "Cell mediated immune status in malignancy--pretherapy and post-therapy assessment." "Neoadjuvant vinorelbine-capecitabine versus docetaxel-doxorubicin-cyclophosphamide in early nonresponsive breas"| __truncated__ "Randomized phase 3 trial of fluorouracil, epirubicin, and cyclophosphamide alone or followed by Paclitaxel for "| __truncated__ ...
+ $ abstract: chr  "" "Twenty-eight cases of malignancies of different kinds were studied to assess T-cell activity and population bef"| __truncated__ "BACKGROUND: Among breast cancer patients, nonresponse to initial neoadjuvant chemotherapy is associated with un"| __truncated__ "BACKGROUND: Taxanes are among the most active drugs for the treatment of metastatic breast cancer, and, as a co"| __truncated__ ...
+ $ trial   : int  1 0 1 1 1 0 1 0 0 0 ...
+> library(tm)
+> corpusTitle = VCorpus(VectorSource(trials$title))
+> corpusTitle = tm_map(corpusTitle, content_transformer(tolower))
+> corpusTitle = tm_map(corpusTitle, removePunctuation)
+> corpusTitle = tm_map(corpusTitle, removeWords, stopwords("english"))
+> corpusTitle = tm_map(corpusTitle, stemDocument)
+> dtmTitle = DocumentTermMatrix(corpusTitle)
+> dtmTitle = removeSparseTerms(dtmTitle, 0.95)
+> dtmTitle = as.data.frame(as.matrix(dtmTitle))
+> corpusAbstract = VCorpus(VectorSource(trials$abstract))
+> corpusAbstract = tm_map(corpusAbstract,content_transformer(tolower))
+> corpusAbstract = tm_map(corpusAbstract, removePunctuation)
+> corpusAbstract = tm_map(corpusAbstract, removeWords,stopwords("english"))
+> dtmAbstract = DocumentTermMatrix(corpusAbstract)
+> dtmAbstract = removeSparseTerms(dtmAbstract,0.95)
+> dtmAbstract = as.data.frame(as.matrix(dtmAbstract))
+> csAbstract = colSums(dtmAbstract)
+> csAbstract
+            0001              001              005              100              500    5fluorouracil        according         achieved           active 
+             249              162              124              225              169              208              174              186              137 
+        activity         addition       additional         adjuvant     administered   administration         advanced          adverse              age 
+             309              227              172             1161              306              216              545              250              360 
+          agents              aim            alone             also         although            among         analyses         analysis         analyzed 
+             136              130              472              364              191              365              141              587              110 
+           andor              arm             arms        aromatase           assess         assessed         assigned       associated        available 
+             128              744              294              171              154              269              411              504              103 
+        axillary       background            based         baseline          benefit           better             bone           breast              can 
+             292              397              122              340              475              186              510             3854              191 
+          cancer        carcinoma            cases             cell            cells           change          changes  characteristics     chemotherapy 
+            3568              215              201              154              205              163              241              109             2337 
+        clinical              cmf      combination         combined           common          compare         compared        comparing         complete 
+             835              586              690              162              162              167              941              111              411 
+       completed       conclusion      conclusions        conducted       confidence       considered          control          courses            cycle 
+             115              490              352              170              240              104              429              172              220 
+          cycles cyclophosphamide            daily             data              day             days            death         decrease        decreased 
+             734              632              412              405              470              775              140              130              185 
+    demonstrated           design        determine       determined        developed              dfs       difference      differences        different 
+             170              129              217              101              139              310              504              358              246 
+         disease      diseasefree          distant        docetaxel             dose            doses      doubleblind      doxorubicin             drug 
+             939              364              149              514              794              288              142              486              204 
+           drugs              due         duration            early           effect        effective          effects         efficacy            eight 
+             128              154              320              325              423              303              525              576              124 
+          either         eligible              end        endocrine         endpoint         enrolled          entered       epirubicin         estrogen 
+             532              176              218              266              126              195              109              338              375 
+       evaluable         evaluate        evaluated       evaluation           events            every         evidence      experienced       expression 
+             212              223              299              140              339              487              119              149              310 
+          factor          factors          failure         findings            first        firstline             five     fluorouracil         followed 
+             296              256              244              152              421              182              173              215              366 
+       following         followup            found             four            given            grade          greater            group           groups 
+             247              494              237              369              374              529              279             1879              780 
+          growth           hazard             her2             high           higher          hormone          however            human          hundred 
+             208              254              314              309              415              287              339              135              195 
+             iii          improve         improved      improvement        incidence         included        including         increase        increased 
+             266              115              208              151              280              310              186              243              364 
+     independent         infusion          initial         interval     investigated            least             less            level           levels 
+             135              206              143              279              123              177              351              152              590 
+            life            local           longer              low            lower            lymph       mastectomy              may              mbc 
+             178              163              193              196              222              249              165              413              276 
+            mean         measured           median       metastases       metastatic          methods     methotrexate             mgm2           months 
+             289              150             1178              345              755              806              265             1093             1490 
+     multicenter     multivariate           nausea         negative      neoadjuvant      neutropenia              new             node     nodepositive 
+             126              142              239              233              289              234              171              188              199 
+           nodes           number        objective         observed         obtained         occurred              one         operable             oral 
+             289              276              357              571              127              260              566              149              274 
+          orally          outcome         outcomes          overall       paclitaxel          partial          patient         patients              per 
+             148              215              120              962              397              282              340             8041              218 
+       performed           period            phase          placebo             plus            point       population         positive   postmenopausal 
+             227              150              477              474              622              122              150              469              589 
+       potential       predictive    premenopausal          present         previous       previously          primary            prior     progesterone 
+             107              161              303              151              136              219              711              305              113 
+      prognostic      progression  progressionfree      prospective          purpose          quality     radiotherapy       randomised       randomized 
+             232              458              158              176              432              188              244              249             1046 
+        randomly            range             rate            rates            ratio          receive         received        receiving         receptor 
+             377              211              816              420              300              559              867              474              506 
+receptorpositive       recurrence          reduced        reduction          regimen         regimens          relapse          related         relative 
+             152              337              231              244              482              325              188              108              171 
+        reported     respectively         response        responses          results             risk           safety           second        secondary 
+             231              700             1749              268             1286              603              265              134              158 
+            seen            serum          setting            seven           severe           showed            shown             side      significant 
+             199              315              128              108              164              374              117              167             1039 
+   significantly          similar           single              six             size           stable            stage         standard      statistical 
+             902              405              149              261              174              154              259              274              106 
+   statistically           status          studied          studies            study         subgroup          suggest         superior          support 
+             268              538              116              286             1557              131              135              138              125 
+         surgery         survival         systemic        tamoxifen            terms             test          therapy            three             time 
+             406             1898              134             1630              128              146             1499              564              759 
+          tissue        tolerated            total       toxicities         toxicity          treated        treatment       treatments            trial 
+             164              220              393              168              790              831             2729              165             1135 
+          trials            tumor           tumors              two              use             used            using            value           versus 
+             282              612              506              889              321              333              339              147              570 
+        vomiting           weekly            weeks             well          whereas          whether           within          without            women 
+             174              262              726              328              173              235              172              306             1474 
+            year            years 
+             185             1143 
+> max(csAbstract)
+[1] 8041
+> max(csAbstract)
+[1] 8041
+> which.max(csAbstract)
+patients 
+     215 
+> colnames(dtmTitle) = paste0("T", colnames(dtmTitle))
+> colnames(dtmAbstract) = paste0("A", colnames(dtmAbstract))
+> dtm = cbind(dtmTitle, dtmAbstract)
+> dtm$trial = trials$trial
+> ncol(dtm)
+[1] 367
+> library(caTools)
+> set.seed(144)
+> spl = sample.split(dtm$trial, 0.7)
+> train = subset(dtm, spl == TRUE)
+> test = subset(dtm, spl == FALSE)
+> table(train)
+Error in table(train) : attempt to make a table with >= 2^31 elements
+> table(train$trial)
+
+  0   1 
+730 572 
+> 572/(730+572)
+[1] 0.4393241
+> 1-0.4393241
+[1] 0.5606759
+> library(rpart)
+> library(rpart.plot)
+> trialCART = rpart(trial~.,data = train,method="class")
+> summary(trialCART)
+Call:
+rpart(formula = trial ~ ., data = train, method = "class")
+  n= 1302 
+
+          CP nsplit rel error    xerror       xstd
+1 0.35489510      0 1.0000000 1.0000000 0.03130819
+2 0.10139860      1 0.6451049 0.6451049 0.02842840
+3 0.02272727      2 0.5437063 0.5839161 0.02754923
+4 0.01048951      5 0.4720280 0.5314685 0.02668705
+5 0.01000000      7 0.4510490 0.5174825 0.02643890
+
+Variable importance
+          Tphase            Amgm2             Tiii        Asurvival     Aneutropenia             Ambc           Aphase      Atoxicities          Tversus 
+              29               11                9                7                5                4                4                3                3 
+        Aoverall     Adiseasefree Tcyclophosphamid          Tbreast          Amedian      Apredictive             A500        Afollowup          Ahazard 
+               3                2                2                2                2                2                2                1                1 
+     Aepirubicin     Adoxorubicin      Aexpression      Aassociated      Aprognostic           Aevery 
+               1                1                1                1                1                1 
+
+Node number 1: 1302 observations,    complexity param=0.3548951
+  predicted class=0  expected loss=0.4393241  P(node) =1
+    class counts:   730   572
+   probabilities: 0.561 0.439 
+  left son=2 (1005 obs) right son=3 (297 obs)
+  Primary splits:
+      Tphase    < 0.5 to the left,  improve=124.62490, (0 missing)
+      Atoxicity < 0.5 to the left,  improve= 98.40074, (0 missing)
+      Amgm2     < 0.5 to the left,  improve= 98.09349, (0 missing)
+      Aevery    < 0.5 to the left,  improve= 72.81706, (0 missing)
+      Aresponse < 0.5 to the left,  improve= 71.78619, (0 missing)
+  Surrogate splits:
+      Tiii         < 0.5 to the left,  agree=0.840, adj=0.300, (0 split)
+      Aneutropenia < 0.5 to the left,  agree=0.807, adj=0.155, (0 split)
+      Ambc         < 0.5 to the left,  agree=0.803, adj=0.135, (0 split)
+      Aphase       < 0.5 to the left,  agree=0.803, adj=0.135, (0 split)
+      Atoxicities  < 0.5 to the left,  agree=0.798, adj=0.114, (0 split)
+
+Node number 2: 1005 observations,    complexity param=0.1013986
+  predicted class=0  expected loss=0.320398  P(node) =0.7718894
+    class counts:   683   322
+   probabilities: 0.680 0.320 
+  left son=4 (875 obs) right son=5 (130 obs)
+  Primary splits:
+      Amgm2             < 0.5 to the left,  improve=48.42271, (0 missing)
+      Asurvival         < 0.5 to the left,  improve=45.92267, (0 missing)
+      Tversus           < 0.5 to the left,  improve=45.55312, (0 missing)
+      Atoxicity         < 0.5 to the left,  improve=43.94031, (0 missing)
+      Acyclophosphamide < 0.5 to the left,  improve=41.05959, (0 missing)
+  Surrogate splits:
+      A500         < 0.5 to the left,  agree=0.889, adj=0.138, (0 split)
+      Aepirubicin  < 1.5 to the left,  agree=0.884, adj=0.100, (0 split)
+      Adoxorubicin < 2.5 to the left,  agree=0.882, adj=0.085, (0 split)
+      Aevery       < 1.5 to the left,  agree=0.877, adj=0.046, (0 split)
+      Adocetaxel   < 5.5 to the left,  agree=0.876, adj=0.038, (0 split)
+
+Node number 3: 297 observations,    complexity param=0.01048951
+  predicted class=1  expected loss=0.1582492  P(node) =0.2281106
+    class counts:    47   250
+   probabilities: 0.158 0.842 
+  left son=6 (16 obs) right son=7 (281 obs)
+  Primary splits:
+      Tbreast  < 0.5 to the left,  improve=9.473778, (0 missing)
+      Arisk    < 1.5 to the right, improve=7.003397, (0 missing)
+      Alevels  < 1.5 to the right, improve=5.016553, (0 missing)
+      Alife    < 0.5 to the right, improve=5.016553, (0 missing)
+      Aquality < 0.5 to the right, improve=4.519316, (0 missing)
+  Surrogate splits:
+      Aincrease     < 1.5 to the right, agree=0.953, adj=0.125, (0 split)
+      Aadministered < 2.5 to the right, agree=0.949, adj=0.062, (0 split)
+
+Node number 4: 875 observations,    complexity param=0.02272727
+  predicted class=0  expected loss=0.2605714  P(node) =0.672043
+    class counts:   647   228
+   probabilities: 0.739 0.261 
+  left son=8 (518 obs) right son=9 (357 obs)
+  Primary splits:
+      Asurvival         < 0.5 to the left,  improve=31.80802, (0 missing)
+      Tversus           < 0.5 to the left,  improve=30.64761, (0 missing)
+      Acyclophosphamide < 0.5 to the left,  improve=30.09940, (0 missing)
+      Amedian           < 0.5 to the left,  improve=28.52596, (0 missing)
+      Amethotrexate     < 0.5 to the left,  improve=21.96915, (0 missing)
+  Surrogate splits:
+      Aoverall     < 0.5 to the left,  agree=0.750, adj=0.387, (0 split)
+      Adiseasefree < 0.5 to the left,  agree=0.725, adj=0.325, (0 split)
+      Amedian      < 0.5 to the left,  agree=0.689, adj=0.238, (0 split)
+      Afollowup    < 0.5 to the left,  agree=0.673, adj=0.199, (0 split)
+      Ahazard      < 0.5 to the left,  agree=0.656, adj=0.157, (0 split)
+
+Node number 5: 130 observations,    complexity param=0.01048951
+  predicted class=1  expected loss=0.2769231  P(node) =0.09984639
+    class counts:    36    94
+   probabilities: 0.277 0.723 
+  left son=10 (8 obs) right son=11 (122 obs)
+  Primary splits:
+      Apredictive < 0.5 to the right, improve=6.098424, (0 missing)
+      Atoxicity   < 0.5 to the left,  improve=4.884537, (0 missing)
+      Arate       < 1.5 to the left,  improve=4.514369, (0 missing)
+      Tbreast     < 0.5 to the left,  improve=4.421188, (0 missing)
+      Tversus     < 0.5 to the left,  improve=4.387930, (0 missing)
+  Surrogate splits:
+      Aexpression < 0.5 to the right, agree=0.969, adj=0.500, (0 split)
+      Aassociated < 1.5 to the right, agree=0.962, adj=0.375, (0 split)
+      Aprognostic < 1.5 to the right, agree=0.962, adj=0.375, (0 split)
+      Aevaluated  < 1.5 to the right, agree=0.954, adj=0.250, (0 split)
+      Aher2       < 0.5 to the right, agree=0.954, adj=0.250, (0 split)
+
+Node number 6: 16 observations
+  predicted class=0  expected loss=0.3125  P(node) =0.01228879
+    class counts:    11     5
+   probabilities: 0.688 0.312 
+
+Node number 7: 281 observations
+  predicted class=1  expected loss=0.1281139  P(node) =0.2158218
+    class counts:    36   245
+   probabilities: 0.128 0.872 
+
+Node number 8: 518 observations
+  predicted class=0  expected loss=0.1486486  P(node) =0.3978495
+    class counts:   441    77
+   probabilities: 0.851 0.149 
+
+Node number 9: 357 observations,    complexity param=0.02272727
+  predicted class=0  expected loss=0.4229692  P(node) =0.2741935
+    class counts:   206   151
+   probabilities: 0.577 0.423 
+  left son=18 (307 obs) right son=19 (50 obs)
+  Primary splits:
+      Tversus           < 0.5 to the left,  improve=13.20897, (0 missing)
+      Acyclophosphamide < 0.5 to the left,  improve=12.88702, (0 missing)
+      Trespons          < 0.5 to the right, improve=11.71896, (0 missing)
+      Aduration         < 0.5 to the left,  improve=11.53291, (0 missing)
+      Tcyclophosphamid  < 0.5 to the left,  improve=11.35870, (0 missing)
+  Surrogate splits:
+      Avomiting    < 0.5 to the left,  agree=0.871, adj=0.08, (0 split)
+      Tcombin      < 1.5 to the left,  agree=0.868, adj=0.06, (0 split)
+      Tdoxorubicin < 1.5 to the left,  agree=0.866, adj=0.04, (0 split)
+      Ttamoxifen   < 1.5 to the left,  agree=0.866, adj=0.04, (0 split)
+      Aevaluable   < 1.5 to the left,  agree=0.866, adj=0.04, (0 split)
+
+Node number 10: 8 observations
+  predicted class=0  expected loss=0.125  P(node) =0.006144393
+    class counts:     7     1
+   probabilities: 0.875 0.125 
+
+Node number 11: 122 observations
+  predicted class=1  expected loss=0.2377049  P(node) =0.093702
+    class counts:    29    93
+   probabilities: 0.238 0.762 
+
+Node number 18: 307 observations,    complexity param=0.02272727
+  predicted class=0  expected loss=0.3680782  P(node) =0.2357911
+    class counts:   194   113
+   probabilities: 0.632 0.368 
+  left son=36 (282 obs) right son=37 (25 obs)
+  Primary splits:
+      Tcyclophosphamid  < 0.5 to the left,  improve=10.154760, (0 missing)
+      Acycles           < 0.5 to the left,  improve= 9.421539, (0 missing)
+      Acyclophosphamide < 0.5 to the left,  improve= 8.844422, (0 missing)
+      Aregimen          < 0.5 to the left,  improve= 8.734039, (0 missing)
+      Trespons          < 0.5 to the right, improve= 8.677642, (0 missing)
+  Surrogate splits:
+      Acourses    < 5.5 to the left,  agree=0.925, adj=0.08, (0 split)
+      Aday        < 3.5 to the left,  agree=0.925, adj=0.08, (0 split)
+      Apredictive < 2.5 to the left,  agree=0.925, adj=0.08, (0 split)
+      Acmf        < 5.5 to the left,  agree=0.922, adj=0.04, (0 split)
+      Aeight      < 1.5 to the left,  agree=0.922, adj=0.04, (0 split)
+
+Node number 19: 50 observations
+  predicted class=1  expected loss=0.24  P(node) =0.03840246
+    class counts:    12    38
+   probabilities: 0.240 0.760 
+
+Node number 36: 282 observations
+  predicted class=0  expected loss=0.3297872  P(node) =0.2165899
+    class counts:   189    93
+   probabilities: 0.670 0.330 
+
+Node number 37: 25 observations
+  predicted class=1  expected loss=0.2  P(node) =0.01920123
+    class counts:     5    20
+   probabilities: 0.200 0.800 
+
+> prp(trialCART)
+> predTrain = predict(trialCart)[,2]
+Error in predict(trialCart) : object 'trialCart' not found
+> predTrain = predict(trialCART)[,2]
+> summary(predTrain)
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+ 0.1250  0.1486  0.3298  0.4393  0.7623  0.8719 
+> predTrain = predict(trialCART)
+> summary(predTrain)
+       0                1         
+ Min.   :0.1281   Min.   :0.1250  
+ 1st Qu.:0.2377   1st Qu.:0.1486  
+ Median :0.6702   Median :0.3298  
+ Mean   :0.5607   Mean   :0.4393  
+ 3rd Qu.:0.8514   3rd Qu.:0.7623  
+ Max.   :0.8750   Max.   :0.8719  
+> table(train$trial, predTrain >= 0.5)
+Error in table(train$trial, predTrain >= 0.5) : 
+  all arguments must have the same length
+> table(trials$trial, predTrain >= 0.5)
+Error in table(trials$trial, predTrain >= 0.5) : 
+  all arguments must have the same length
+> predTest = predict(trialCART, newdata=test)[,2]
+> predTest = predict(trialCART, newdata=test)
+> table(test$trial, predTest >= 0.5)
+Error in table(test$trial, predTest >= 0.5) : 
+  all arguments must have the same length
+> predTest = predict(trialCART, newdata=test)[,2]
+> table(test$trial, predTest >= 0.5)
+   
+    FALSE TRUE
+  0   274   39
+  1    96  149
+> #probablity 
+> (274+149)/(274+96+39+149)
+[1] 0.7580645
+> 
+> save.image("C:\\Users\\Saransh\\Documents\\R DATA\\CLINICAL DATA\\CLINICAL Trials")
+> ##### THE MODEL HAS BEEN SOLVED USING CART MODEL, GIVING AN EFFICIENCE OF 76% CORRECT OUTCOME ####
